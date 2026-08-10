@@ -42,7 +42,7 @@ jobs:
 
       - name: Install Cascade
         run: |
-          pip install "cascade[writeback] @ git+https://github.com/himxsh/Cascade.git@e52764e"
+          pip install "cascade[writeback] @ git+https://github.com/himxsh/Cascade.git@5fd05e1"
 
       - name: Compute PR diff
         id: diff
