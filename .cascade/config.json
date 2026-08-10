@@ -1,0 +1,23 @@
+{
+  "default_urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)",
+  "models_dir": "models",
+  "mappings": [
+    {
+      "path": "models/raw/",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)"
+    },
+    {
+      "path": "models/staging/",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_orders,PROD)"
+    },
+    {
+      "path": "models/marts/",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_orders,PROD)"
+    }
+  ],
+  "urn_files": {
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)": "models/raw/raw_orders.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_orders,PROD)": "models/staging/stg_orders.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_orders,PROD)": "models/marts/fct_orders.sql"
+  }
+}

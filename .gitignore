@@ -1,0 +1,7 @@
+.env
+.venv/
+__pycache__/
+artifacts/
+cascade/runs/
+*.pyc
+.DS_Store
