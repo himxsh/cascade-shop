@@ -1,4 +1,4 @@
--- Staging: clean raw orders for downstream marts.
+-- Staging orders from raw
 select
     order_id,
     user_id,

@@ -1,4 +1,4 @@
--- Upstream landing model for orders (breaking changes start here).
+-- Landing: orders
 select
     order_id,
     user_id,

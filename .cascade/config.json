@@ -3,6 +3,22 @@
   "models_dir": "models",
   "mappings": [
     {
+      "path": "models/raw/raw_customers.sql",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_customers,PROD)"
+    },
+    {
+      "path": "models/raw/raw_products.sql",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_products,PROD)"
+    },
+    {
+      "path": "models/raw/raw_orders.sql",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)"
+    },
+    {
+      "path": "models/raw/raw_order_items.sql",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_order_items,PROD)"
+    },
+    {
       "path": "models/raw/",
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)"
     },
@@ -11,13 +27,26 @@
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_orders,PROD)"
     },
     {
+      "path": "models/intermediate/",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.int_orders_enriched,PROD)"
+    },
+    {
       "path": "models/marts/",
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_orders,PROD)"
     }
   ],
   "urn_files": {
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_customers,PROD)": "models/raw/raw_customers.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_products,PROD)": "models/raw/raw_products.sql",
     "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_orders,PROD)": "models/raw/raw_orders.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.raw_order_items,PROD)": "models/raw/raw_order_items.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_customers,PROD)": "models/staging/stg_customers.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_products,PROD)": "models/staging/stg_products.sql",
     "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_orders,PROD)": "models/staging/stg_orders.sql",
-    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_orders,PROD)": "models/marts/fct_orders.sql"
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.stg_order_items,PROD)": "models/staging/stg_order_items.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.int_orders_enriched,PROD)": "models/intermediate/int_orders_enriched.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_orders,PROD)": "models/marts/fct_orders.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.fct_order_items,PROD)": "models/marts/fct_order_items.sql",
+    "urn:li:dataset:(urn:li:dataPlatform:postgres,cascade_shop.public.mart_customer_revenue,PROD)": "models/marts/mart_customer_revenue.sql"
   }
 }

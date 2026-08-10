@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 """Ingest cascade-shop Postgres datasets + lineage into DataHub GMS.
 
-Reads table definitions from this repo's catalog (kept in sync with db/init.sql).
-Does not use Cascade's demo_graph fixture.
+Kept aligned with db/init.sql and models/. Does not use Cascade demo_graph.
 
 Usage:
     python scripts/ingest_datahub.py           # dry-run
     python scripts/ingest_datahub.py --apply   # emit to DATAHUB_GMS_URL
-
-Env:
-    DATAHUB_GMS_URL  (default http://localhost:8080)
-    DATAHUB_TOKEN    (optional)
 """
 
 from __future__ import annotations
@@ -50,47 +45,158 @@ OWNER = "urn:li:corpuser:shop_analytics"
 
 
 def urn(table: str) -> str:
-    return f"urn:li:dataset:(urn:li:dataPlatform:{PLATFORM},cascade_shop.public.{table},PROD)"
+    return (
+        f"urn:li:dataset:(urn:li:dataPlatform:{PLATFORM},"
+        f"cascade_shop.public.{table},PROD)"
+    )
 
 
-# Kept aligned with db/init.sql — operators update both when schema changes.
+def _fields(*pairs: tuple[str, str]) -> list[tuple[str, str]]:
+    return list(pairs)
+
+
 CATALOG = [
     {
+        "name": "raw_customers",
+        "description": "Landing customers.",
+        "fields": _fields(
+            ("customer_id", "bigint"),
+            ("email", "string"),
+            ("full_name", "string"),
+            ("country", "string"),
+        ),
+    },
+    {
+        "name": "raw_products",
+        "description": "Landing products.",
+        "fields": _fields(
+            ("product_id", "bigint"),
+            ("sku", "string"),
+            ("product_name", "string"),
+            ("unit_price_cents", "int"),
+        ),
+    },
+    {
         "name": "raw_orders",
-        "description": "Landing table for shop orders.",
-        "fields": [
+        "description": "Landing orders.",
+        "fields": _fields(
             ("order_id", "bigint"),
             ("user_id", "bigint"),
             ("amount_cents", "int"),
             ("ordered_at", "timestamp"),
-        ],
+        ),
+    },
+    {
+        "name": "raw_order_items",
+        "description": "Landing order line items.",
+        "fields": _fields(
+            ("order_id", "bigint"),
+            ("product_id", "bigint"),
+            ("qty", "int"),
+            ("line_amount_cents", "int"),
+        ),
+    },
+    {
+        "name": "stg_customers",
+        "description": "Staged customers.",
+        "fields": _fields(
+            ("customer_id", "bigint"),
+            ("email", "string"),
+            ("full_name", "string"),
+            ("country", "string"),
+        ),
+    },
+    {
+        "name": "stg_products",
+        "description": "Staged products.",
+        "fields": _fields(
+            ("product_id", "bigint"),
+            ("sku", "string"),
+            ("product_name", "string"),
+            ("unit_price_cents", "int"),
+        ),
     },
     {
         "name": "stg_orders",
-        "description": "Cleaned orders for marts.",
-        "fields": [
+        "description": "Staged orders.",
+        "fields": _fields(
             ("order_id", "bigint"),
             ("user_id", "bigint"),
             ("amount_cents", "int"),
             ("ordered_at", "timestamp"),
-        ],
+        ),
+    },
+    {
+        "name": "stg_order_items",
+        "description": "Staged order items with sku.",
+        "fields": _fields(
+            ("order_id", "bigint"),
+            ("product_id", "bigint"),
+            ("sku", "string"),
+            ("qty", "int"),
+            ("line_amount_cents", "int"),
+        ),
+    },
+    {
+        "name": "int_orders_enriched",
+        "description": "Orders joined to customer attributes.",
+        "fields": _fields(
+            ("order_id", "bigint"),
+            ("user_id", "bigint"),
+            ("email", "string"),
+            ("country", "string"),
+            ("amount_cents", "int"),
+            ("ordered_at", "timestamp"),
+        ),
     },
     {
         "name": "fct_orders",
-        "description": "Order-grain fact for analytics.",
-        "fields": [
+        "description": "Order-grain fact.",
+        "fields": _fields(
             ("order_id", "bigint"),
             ("user_id", "bigint"),
             ("amount_cents", "int"),
             ("ordered_at", "timestamp"),
-        ],
+        ),
+    },
+    {
+        "name": "fct_order_items",
+        "description": "Order-item fact with purchaser.",
+        "fields": _fields(
+            ("order_id", "bigint"),
+            ("product_id", "bigint"),
+            ("user_id", "bigint"),
+            ("qty", "int"),
+            ("line_amount_cents", "int"),
+        ),
+    },
+    {
+        "name": "mart_customer_revenue",
+        "description": "Customer revenue mart.",
+        "fields": _fields(
+            ("user_id", "bigint"),
+            ("email", "string"),
+            ("country", "string"),
+            ("order_count", "int"),
+            ("revenue_cents", "bigint"),
+        ),
     },
 ]
 
-# target has upstream source
+# (downstream, upstream)
 LINEAGE = [
+    ("stg_customers", "raw_customers"),
+    ("stg_products", "raw_products"),
     ("stg_orders", "raw_orders"),
-    ("fct_orders", "stg_orders"),
+    ("stg_order_items", "raw_order_items"),
+    ("stg_order_items", "raw_products"),
+    ("int_orders_enriched", "stg_orders"),
+    ("int_orders_enriched", "stg_customers"),
+    ("fct_orders", "int_orders_enriched"),
+    ("fct_order_items", "stg_order_items"),
+    ("fct_order_items", "stg_orders"),
+    ("mart_customer_revenue", "fct_orders"),
+    ("mart_customer_revenue", "stg_customers"),
 ]
 
 
@@ -144,16 +250,22 @@ def build_mcps() -> list:
                 ),
             )
         )
+
+    # Group lineage by target so multi-upstream datasets get one aspect
+    by_target: dict[str, list[str]] = {}
     for target, source in LINEAGE:
+        by_target.setdefault(target, []).append(source)
+    for target, sources in by_target.items():
         mcps.append(
             MetadataChangeProposalWrapper(
                 entityUrn=urn(target),
                 aspect=UpstreamLineageClass(
                     upstreams=[
                         UpstreamClass(
-                            dataset=urn(source),
+                            dataset=urn(src),
                             type=DatasetLineageTypeClass.TRANSFORMED,
                         )
+                        for src in sources
                     ]
                 ),
             )
