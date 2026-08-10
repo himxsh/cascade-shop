@@ -1,7 +1,7 @@
 -- Staging orders from raw
 select
     order_id,
-    user_id,
+    customer_id,
     amount_cents,
     ordered_at
 from cascade_shop.public.raw_orders

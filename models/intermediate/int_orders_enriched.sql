@@ -2,7 +2,7 @@
 select
     o.order_id,
     o.user_id,
-    c.email,
+    c.email_address,
     c.country,
     o.amount_cents,
     o.ordered_at
