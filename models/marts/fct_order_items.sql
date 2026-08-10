@@ -2,7 +2,7 @@
 select
     i.order_id,
     i.product_id,
-    o.user_id,
+    o.customer_id AS user_id,
     i.qty,
     i.line_amount_cents
 from cascade_shop.public.stg_order_items i
