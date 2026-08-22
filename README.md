@@ -13,7 +13,7 @@ This is not Cascade’s offline fixture demo. It is a standalone repo another te
 | `models/raw|staging|marts/` | SQL Cascade remediates |
 | `.cascade/config.json` | Path→URN mappings + `urn_files` |
 | `scripts/ingest_datahub.py` | Register datasets + lineage in DataHub |
-| `.github/workflows/cascade.yml` | Installs pinned Cascade; live impact + remediation PR |
+| `.github/workflows/cascade.yml` | Installs pinned Cascade; comments first, stacked PR on `/cascade stack` |
 
 ## Prerequisites
 
@@ -52,16 +52,16 @@ Confirm lineage in the DataHub UI for:
 | `LLM_API_KEY` | optional | LLM-primary rewrites |
 | `CASCADE_WRITEBACK` | optional | set `1` only when you want live tags from Actions |
 
-4. Open a PR that renames `user_id` → `customer_id` in `models/raw/raw_orders.sql` (and update `db/init.sql` in the same change when you migrate the warehouse).
+4. Open a PR that renames `user_id` → `customer_id` in `models/raw/raw_orders.sql` (and update `db/init.sql` in the same change when you migrate the warehouse). Cascade comments on that PR. Comment `/cascade stack` to open a stacked PR with the downstream rewrites.
 
 The workflow **fails** if `DATAHUB_GMS_URL` is missing. It never falls back to Cascade’s fixture catalog.
 
-Update the Cascade pin in `.github/workflows/cascade.yml` when you intentionally upgrade (`@e52764e` → new tag/commit).
+Update the Cascade pin in `.github/workflows/cascade.yml` when you intentionally upgrade (`@bcd4cf9` → new tag/commit).
 
 ## Local Cascade (optional)
 
 ```bash
-pip install "cascade @ git+https://github.com/himxsh/Cascade.git@9b9cf2d"
+pip install "cascade-agent @ git+https://github.com/himxsh/Cascade.git@bcd4cf91a019e60a7cc5eb4973225e1e25ef616e"
 # from a branch with a breaking SQL diff file:
 cascade impact --diff /tmp/break.diff --source live --generate --out /tmp/out
 cascade apply --report /tmp/out/impact_report.json --out /tmp/apply --mode dry-run
