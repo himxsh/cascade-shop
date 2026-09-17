@@ -61,7 +61,7 @@ Update the Cascade pin in `.github/workflows/cascade.yml` when you intentionally
 ## Local Cascade (optional)
 
 ```bash
-pip install "cascade-agent @ git+https://github.com/himxsh/Cascade.git@bcd4cf91a019e60a7cc5eb4973225e1e25ef616e"
+pip install "cascade-bot @ git+https://github.com/himxsh/Cascade.git@bcd4cf91a019e60a7cc5eb4973225e1e25ef616e"
 # from a branch with a breaking SQL diff file:
 cascade impact --diff /tmp/break.diff --source live --generate --out /tmp/out
 cascade apply --report /tmp/out/impact_report.json --out /tmp/apply --mode dry-run

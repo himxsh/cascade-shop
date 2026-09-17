@@ -1,7 +1,7 @@
 name: Cascade
 
 # Live DataHub only — fails closed if DATAHUB_GMS_URL is unset or unreachable.
-# Pin cascade-agent when you intentionally upgrade.
+# Pin cascade-bot when you intentionally upgrade.
 # Comments on the source PR. Opens a stacked PR only on `/cascade stack`.
 
 on:
@@ -53,7 +53,7 @@ jobs:
 
       - name: Install Cascade
         run: |
-          pip install "cascade-agent[writeback] @ git+https://github.com/himxsh/Cascade.git@24173511f5a116437d80b3a0f15e4aa156e3eca0"
+          pip install "cascade-bot[writeback] @ git+https://github.com/himxsh/Cascade.git@24173511f5a116437d80b3a0f15e4aa156e3eca0"
 
       - name: Resolve PR
         id: pr
